@@ -40,4 +40,15 @@ class Plane extends Model
             get: fn () => $this->commissioned_at?->format('d.m.Y'),
         );
     }
+
+    // АКСЕССОР: $plane->image_url — готовая ссылка на картинку для <img src="...">
+    // Файлы лежат в storage/app/public, а через ярлык public/storage они видны из браузера.
+    protected function imageUrl(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->image
+                ? asset('storage/' . $this->image)
+                : asset('images/aeroflot.png'), // если фото нет — показываем логотип
+        );
+    }
 }

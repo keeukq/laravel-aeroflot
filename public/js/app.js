@@ -17142,13 +17142,92 @@ var jQuery = jQueryFactory( window, true );
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist-module/jquery.module.js");
 /* harmony import */ var bootstrap__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap/dist/js/bootstrap.esm.js");
-// jQuery и весь JS Bootstrap (Modal, Popover, Toast и т.д.)
 
 
-
-// Делаем их доступными на странице (например, в консоли браузера)
 window.$ = window.jQuery = jquery__WEBPACK_IMPORTED_MODULE_0__["default"];
 window.bootstrap = bootstrap__WEBPACK_IMPORTED_MODULE_1__;
+(0,jquery__WEBPACK_IMPORTED_MODULE_0__["default"])(function () {
+  // ---------- 1. Проверка формы (Bootstrap Validation) ----------
+  // Если поля заполнены неверно — не отправляем форму и подсвечиваем ошибки
+  (0,jquery__WEBPACK_IMPORTED_MODULE_0__["default"])('.needs-validation').on('submit', function (e) {
+    if (!this.checkValidity()) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    (0,jquery__WEBPACK_IMPORTED_MODULE_0__["default"])(this).addClass('was-validated');
+  });
+
+  // ---------- 2. Подтверждение удаления ----------
+  (0,jquery__WEBPACK_IMPORTED_MODULE_0__["default"])(document).on('submit', '.delete-form', function () {
+    return confirm('Удалить самолёт ' + (0,jquery__WEBPACK_IMPORTED_MODULE_0__["default"])(this).data('name') + '?');
+  });
+
+  // ---------- 3. Модальное окно с подробностями ----------
+  var modalEl = document.getElementById('planeModal');
+  if (!modalEl) return; // мы не на странице списка
+
+  var modal = new bootstrap__WEBPACK_IMPORTED_MODULE_1__.Modal(modalEl);
+  var $cards = (0,jquery__WEBPACK_IMPORTED_MODULE_0__["default"])('.plane-card');
+  var current = 0; // номер карточки, которая сейчас показана в окне
+
+  // Убираем подсказки старого содержимого, иначе они останутся висеть на странице
+  function removeHints() {
+    (0,jquery__WEBPACK_IMPORTED_MODULE_0__["default"])('#planeModal [data-bs-toggle="popover"]').each(function () {
+      var instance = bootstrap__WEBPACK_IMPORTED_MODULE_1__.Popover.getInstance(this);
+      if (instance) instance.dispose();
+    });
+    (0,jquery__WEBPACK_IMPORTED_MODULE_0__["default"])('#planeModal [data-bs-toggle="tooltip"]').each(function () {
+      var instance = bootstrap__WEBPACK_IMPORTED_MODULE_1__.Tooltip.getInstance(this);
+      if (instance) instance.dispose();
+    });
+  }
+  function initPopovers() {
+    (0,jquery__WEBPACK_IMPORTED_MODULE_0__["default"])('#planeModal [data-bs-toggle="popover"]').each(function () {
+      bootstrap__WEBPACK_IMPORTED_MODULE_1__.Popover.getOrCreateInstance(this);
+    });
+  }
+
+  // Tooltip включаем, только когда окно уже показано, иначе подсказка встанет со сдвигом
+  function initTooltips() {
+    (0,jquery__WEBPACK_IMPORTED_MODULE_0__["default"])('#planeModal [data-bs-toggle="tooltip"]').each(function () {
+      bootstrap__WEBPACK_IMPORTED_MODULE_1__.Tooltip.getOrCreateInstance(this);
+    });
+  }
+
+  // Загружаем подробности самолёта с номером i (запрос на planes/{id})
+  function load(i) {
+    current = (i + $cards.length) % $cards.length; // зацикливаем: после последнего — первый
+    var $card = $cards.eq(current);
+    (0,jquery__WEBPACK_IMPORTED_MODULE_0__["default"])('#planeModalTitle').text($card.data('title'));
+    (0,jquery__WEBPACK_IMPORTED_MODULE_0__["default"])('#planeCounter').text("".concat(current + 1, " / ").concat($cards.length));
+    jquery__WEBPACK_IMPORTED_MODULE_0__["default"].get($card.data('url')).done(function (html) {
+      removeHints();
+      (0,jquery__WEBPACK_IMPORTED_MODULE_0__["default"])('#planeModal .modal-body').html(html);
+      initPopovers();
+      if ((0,jquery__WEBPACK_IMPORTED_MODULE_0__["default"])(modalEl).hasClass('show')) initTooltips();
+    }).fail(function () {
+      (0,jquery__WEBPACK_IMPORTED_MODULE_0__["default"])('#planeModal .modal-body').html('<p class="text-danger mb-0">Не удалось загрузить данные.</p>');
+    });
+  }
+
+  // Клик по карточке открывает окно (кроме клика по кнопкам внизу карточки)
+  $cards.on('click', function (e) {
+    if ((0,jquery__WEBPACK_IMPORTED_MODULE_0__["default"])(e.target).closest('.card-footer').length) return;
+    load($cards.index(this));
+    modal.show();
+  });
+
+  // Стрелки на клавиатуре переключают самолёты, пока окно открыто
+  (0,jquery__WEBPACK_IMPORTED_MODULE_0__["default"])(document).on('keydown', function (e) {
+    if (!(0,jquery__WEBPACK_IMPORTED_MODULE_0__["default"])(modalEl).hasClass('show')) return;
+    if (e.key === 'ArrowRight') load(current + 1);
+    if (e.key === 'ArrowLeft') load(current - 1);
+  });
+
+  // События Bootstrap ловим обычным addEventListener (jQuery их не видит)
+  modalEl.addEventListener('shown.bs.modal', initTooltips);
+  modalEl.addEventListener('hidden.bs.modal', removeHints);
+});
 
 /***/ }),
 

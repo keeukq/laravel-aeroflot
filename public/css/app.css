@@ -12940,3 +12940,52 @@ textarea.form-control-lg {
 .site-navbar {
   background-color: #1B4965;
 }
+.site-navbar .site-logo {
+  height: 40px;
+  width: auto;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background-color: #FFFFFF;
+}
+
+.plane-card {
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.plane-card .card-img-top {
+  background-color: #FFFFFF;
+}
+.plane-card .card-footer {
+  background-color: transparent;
+  border-top-color: rgba(255, 255, 255, 0.5);
+  cursor: default;
+}
+.plane-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.col:nth-child(5n+1) .plane-card {
+  background-color: #9fd3e8;
+}
+
+.col:nth-child(5n+2) .plane-card {
+  background-color: rgb(52.6722689076%, 78.3081232493%, 88.6610644258%);
+}
+
+.col:nth-child(5n+3) .plane-card {
+  background-color: rgb(42.9915966387%, 73.8711484594%, 86.3417366947%);
+}
+
+.col:nth-child(5n+4) .plane-card {
+  background-color: rgb(33.3109243697%, 69.4341736695%, 84.0224089636%);
+}
+
+.col:nth-child(5n+5) .plane-card {
+  background-color: rgb(23.6302521008%, 64.9971988796%, 81.7030812325%);
+}
+
+.popover-term {
+  border-bottom: 1px dotted currentColor;
+  cursor: help;
+}

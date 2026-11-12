@@ -1,21 +1,100 @@
 @use "sass:color";
 
-$color-header: #1B4965;
-$color-accent: #5FA8D3;
-$color-bg:     #F8FAFC;
-$color-text:   #1B1B1E;
+// =============================================
+// 1. ПЕРЕМЕННЫЕ — цветовая схема из ЛР1
+// =============================================
+$color-bg:      #F8FAFC; // фон страницы
+$color-header:  #1B4965; // фон шапки
+$color-accent:  #5FA8D3; // кнопки, акценты
+$color-card-bg: #9FD3E8; // базовый цвет карточек
+$color-text:    #1B1B1E; // основной текст
+$color-white:   #FFFFFF;
 
+// =============================================
+// 2. ПЕРЕОПРЕДЕЛЯЕМ ПЕРЕМЕННЫЕ BOOTSTRAP (до импорта!)
+// =============================================
 $primary:    $color-accent;
 $body-bg:    $color-bg;
 $body-color: $color-text;
 
+// Свой breakpoint xxxl для очень широких экранов (от 1800px)
 $grid-breakpoints: (
-  xs: 0, sm: 576px, md: 768px, lg: 992px, xl: 1200px, xxl: 1400px, xxxl: 1800px
-);
-$container-max-widths: (
-  sm: 540px, md: 720px, lg: 960px, xl: 1140px, xxl: 1320px, xxxl: 1700px
+  xs: 0,
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1200px,
+  xxl: 1400px,
+  xxxl: 1800px
 );
 
+$container-max-widths: (
+  sm: 540px,
+  md: 720px,
+  lg: 960px,
+  xl: 1140px,
+  xxl: 1320px,
+  xxxl: 1700px
+);
+
+// =============================================
+// 3. ПОДКЛЮЧАЕМ BOOTSTRAP (весь, из node_modules)
+// =============================================
 @import "~bootstrap/scss/bootstrap";
 
-.site-navbar { background-color: $color-header; }
+// =============================================
+// 4. МИКСИН: чем больше номер карточки, тем темнее её цвет
+// =============================================
+@mixin card-color($index) {
+  background-color: color.adjust($color-card-bg, $lightness: ($index - 1) * -6%);
+}
+
+// =============================================
+// 5. СВОИ СТИЛИ
+// =============================================
+.site-navbar {
+  background-color: $color-header;
+
+  .site-logo {
+    height: 40px;
+    width: auto;
+    padding: 2px 8px;
+    border-radius: 6px;
+    background-color: $color-white;
+  }
+}
+
+.plane-card {
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+  .card-img-top {
+    background-color: $color-white; // у фото белый фон
+  }
+
+  // Нижняя полоска с кнопками не должна добавлять свой фон и рамку
+  .card-footer {
+    background-color: transparent;
+    border-top-color: rgba($color-white, 0.5);
+    cursor: default;
+  }
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: $box-shadow;
+  }
+}
+
+// Цикл: красим карточки по кругу в 5 оттенков.
+// 5n+1 — это 1-я, 6-я, 11-я... карточка, поэтому новые тоже получают цвет.
+@for $i from 1 through 5 {
+  .col:nth-child(5n + #{$i}) .plane-card {
+    @include card-color($i);
+  }
+}
+
+// Слово с подсказкой (Popover) в окне с подробностями
+.popover-term {
+  border-bottom: 1px dotted currentColor;
+  cursor: help;
+}
