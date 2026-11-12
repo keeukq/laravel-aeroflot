@@ -43,3 +43,5 @@ php artisan serve
 | `resources/views/` | шаблоны Blade |
 | `resources/js/app.js`, `resources/scss/app.scss` | исходники фронтенда |
 | `webpack.mix.js` | настройка Laravel Mix |
+
+Автор: Максименко Н. А. 
